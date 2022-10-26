@@ -2,7 +2,9 @@ import command.CommandParser;
 import command.impl.CommandParserImpl;
 import command.impl.ExtendedCommandParser;
 import core.StudentSystem;
+import core.data.Student;
 import core.impl.StudentSystemImpl;
+import dependency.management.DependencyManager;
 import persistance.StudentDatabase;
 import persistance.impl.StudentDatabaseImpl;
 import view.StudentView;
@@ -16,11 +18,22 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         //Initializing Dependencies
-        StudentFormatter studentFormatter = new StudentFormatterImpl();
-        StudentView studentView = new StudentConsoleView(studentFormatter);
-        StudentDatabase studentDatabase = new StudentDatabaseImpl();
-        StudentSystem studentSystem = new StudentSystemImpl(studentDatabase, studentView);
-        CommandParser commandParser = new ExtendedCommandParser(studentSystem);
+        DependencyManager dependencyManager = new DependencyManager(
+                CommandParserImpl.class,
+                CommandParser.class,
+                StudentSystem.class,
+                StudentSystemImpl.class,
+                StudentDatabase.class,
+                StudentDatabaseImpl.class,
+                StudentFormatter.class,
+                StudentFormatterImpl.class,
+                StudentConsoleView.class,
+                StudentView.class
+        );
+
+        CommandParser commandParser = dependencyManager.createInstance(CommandParser.class);
+        CommandParser commandParserDynamic = dependencyManager.createInstance("command.CommandParser");
+        System.out.println(commandParser.equals(commandParserDynamic));
 
         while (true)
         {
